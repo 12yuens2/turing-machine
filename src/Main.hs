@@ -21,6 +21,6 @@ main = do
     let tm      = createTM $ lines content
     let tp      = initTape (tail $ map createCell $ splitOn "" input) (alphabet $ fromJust tm)
         
-    putStrLn $ show tp
+
     let result  = run (fromJust tm) $ fromJust tp
     putStrLn $ show result

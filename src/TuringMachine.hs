@@ -45,6 +45,7 @@ data Transition = Transition {  inState    :: State
                              }
     deriving (Show)
 
+-- | Runs the TuringMachine on the TuringTape.
 run :: TM -> TMTape -> Maybe TMTape
 run tm tp = step tm tp
 
@@ -52,7 +53,7 @@ step :: TM -> TMTape -> Maybe TMTape
 step (TM q a qa qr d) tp
     | q `elem` qa = Just tp
     | q `elem` qr = Nothing
-    | otherwise   = step (TM newState a qa qr d) newTp
+    | otherwise   = trace (show tp) $ trace (show tf) $ step (TM newState a qa qr d) newTp
         where
             symbol      = currentCell tp
             tf          = head $ filter (\x -> inState x == q && inSymbol x == symbol) d

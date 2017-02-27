@@ -14,10 +14,10 @@ Parses a description given in the form: (Taken from specifications which can be 
     - Then a line with the world "alphabet" followed by the number of letters in the tape alphabet, followed by those letters, separated by spaces.
 
     - Then an arbitrary number of lines representing the transition table, each of which has the form
-        <state1> <tapeinput> <state2> <tapeoutput> <move>
-      where <move> is either L or R,
-            <state1> and <state2> are mentioned in "states"
-            <tapeinput> and <tapeoutput> are mentioned in "alphabet"
+        \<state1\> \<tapeinput\> \<state2\> \<tapeoutput\> \<move\>
+      where \<move\> is either L or R,
+            \<state1\> and \<state2\> are mentioned in "states"
+            \<tapeinput\> and \<tapeoutput\> are mentioned in "alphabet"
 
 By convention, the first state mentioned is the start state. Not also that underscore (_) is used for the blank character, which does not need to be mentioned explicity in the alphabet.
 
@@ -40,10 +40,13 @@ parseAlphabet (x:y:xs)
     | x /= "alphabet" && length xs /= read y = Nothing
     | otherwise                              = Just s
         where 
-            set = Set.empty
+            set = Set.singleton Blank
             s   = foldr Set.insert set $ map createCell xs 
 
-parseStates :: Maybe TapeAlphabet -> [String] -> Maybe TM
+-- | Creates a TM by parsing a list of States.
+parseStates :: Maybe TapeAlphabet -- ^ TapeAlphabet which the TM reads.
+            -> [String]           -- ^ List of States the TM has, including the accept and rejecting States.
+            -> Maybe TM           -- ^ Returns Nothing if the TapeAlphabet is Nothing. Just TM otherwise.
 parseStates set xs
     | isNothing set = Nothing
     | otherwise     = Just TM { currState = head xs,
@@ -53,28 +56,41 @@ parseStates set xs
                                 delta     = []
                               }
 
-getCleanState :: String -> String
+-- | Sanitizes a State description by removing "+", "-" and " " from the String.
+getCleanState :: String -- ^ State description.
+              -> String -- ^ Returns cleaned description that contains only the name of that State.
 getCleanState xs = [x | x <- xs, not (x `elem` "+- ")]
 
 
-parseTransitions :: [String] -> TM -> TM
+-- | Updates the TM with a list of Transitions parsed from the list of Strings.
+parseTransitions :: [String] -- ^ List of Transition descriptions 
+                 -> TM       -- ^ TM to be updated. Any Transitions in the TM will be replaced.
+                 -> TM       -- ^ Returns updated TM. 
 parseTransitions xs (TM cState a aState rState _) 
     = TM { currState = cState, alphabet = a, qa = aState, qr = rState,  
            delta = map createTransition $ map words xs
          } 
 
-createTransition :: [String] -> Transition
-createTransition [iState, iSym, oState, oSym, m] 
+-- | Creates a single Transition.
+createTransition :: [String]    -- ^ Description of the transition. Must be in the format [\<inputstate\>, \<inputsymbol\>, \<outputstate\>, \<outputsymbol\>, \<move\>].
+                 -> Transition  -- ^ Returns the transition created by the description.
+createTransition [iState, iSym, oState, oSym, m]
     = Transition iState (createCell iSym) oState (createCell oSym) move
     where
         move | m == "L" = L
              | m == "R" = R
 
-createCell :: String -> Cell
+
+-- | Creates a single Cell of the TuringTape for the TuringMachine
+createCell :: String -- ^ String contents of the Cell
+           -> Cell   -- ^ Returns a Cell. The Cell is Blank if the input String is an underscore (_)
 createCell s | '_' `elem` s = Blank
              | otherwise    = Cell s
 
-createTM :: [String] -> Maybe TM
+
+-- | Creates a TM given a full description as described in the module description. 
+createTM :: [String] -- ^ Description of the TM. Each element of the list is a line of the description.
+         -> Maybe TM -- ^ Returns Nothing if the description is in the wrong format. Just TM otherwise.
 createTM (x:xs)
     | isNothing tm = Nothing
     | otherwise    = Just $ parseTransitions ts $ fromJust tm 
