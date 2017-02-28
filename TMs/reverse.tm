@@ -11,7 +11,7 @@ qb-l
 qc-l
 qA +
 qr -
-alphabet 3 a b c
+alphabet 3 a b c 
 qs a qa a. R
 qs b qb b. R
 qs c qc c. R
