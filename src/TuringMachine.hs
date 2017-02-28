@@ -64,16 +64,17 @@ data Transition = Transition { inState    :: State -- ^ Input 'State', current s
 
 -- | Runs a 'TM' on a 'TuringTape'.
 run :: TM -> TMTape -> Maybe TMTape
-run tm tp = step tm tp
+run tm tp = step tm tp 0
 
 -- | Each step of the 'TM', applying the 'Transition' function based on the current symbol in the 'TuringTape' and the current 'State'
 step :: TM           -- ^ Current iteration of the machine in its currState.
      -> TMTape       -- ^ Tape that the machine is reading through.
+     -> Int          -- ^ Counter to keep track of the number of steps (transitions) done.
      -> Maybe TMTape -- ^ Returns Nothing if the 'TuringMachine' rejects. Just 'TMTape' otherwise.
-step (TM q a qa qr d) tp
-    | q `elem` qa = Just tp
-    | q `elem` qr = Nothing
-    | otherwise   = step (TM newState a qa qr d) newTp
+step (TM q a qa qr d) tp x
+    | q `elem` qa = trace (show x) $ Just tp
+    | q `elem` qr = trace (show x) $ Nothing
+    | otherwise   = step (TM newState a qa qr d) newTp (x+1)
         where
             symbol      = currentCell tp
             tf          = head $ filter (\x -> inState x == q && inSymbol x == symbol) d
