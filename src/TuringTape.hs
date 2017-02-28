@@ -14,7 +14,12 @@ module TuringTape where
 
 import qualified Data.Set as Set
 
+-- | Tape of a 'TM' as a ListZipper.
+-- The lists on the left and right of the cursor represents the entire tape.
+-- The cursor in the center is the current cell of the tape.
 data TuringTape a = T [a] a [a]
+
+-- | Print the TuringTape in the right order as internally the lists are in a slightly different order.
 instance (Show a) => Show (TuringTape a) where
     show (T ls x right) = show (left ++ [x]++ right)
         where

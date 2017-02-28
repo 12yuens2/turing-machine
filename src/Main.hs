@@ -11,6 +11,8 @@ import Data.List.Split
 import System.IO
 import System.Environment
 
+-- | Main program that takes a 'TM' description and text input file then 
+-- prints the 'TuringTape' if the 'TM' description accepted the input, otherwise prints Nothing if the input was not accepted.
 main :: IO ()
 main = do
     args <- getArgs
