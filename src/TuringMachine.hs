@@ -71,13 +71,37 @@ step :: TM           -- ^ Current iteration of the machine in its currState.
      -> TMTape       -- ^ Tape that the machine is reading through.
      -> Int          -- ^ Counter to keep track of the number of steps (transitions) done.
      -> Maybe TMTape -- ^ Returns Nothing if the 'TuringMachine' rejects. Just 'TMTape' otherwise.
-step (TM q a qa qr d) tp x
-    | q `elem` qa = trace (show x) $ Just tp
-    | q `elem` qr = trace (show x) $ Nothing
-    | otherwise   = step (TM newState a qa qr d) newTp (x+1)
+step (TM q a qa qr ts) tp x
+    | q `elem` qa = Just tp
+    | q `elem` qr = Nothing
+    | otherwise   = step (TM newState a qa qr ts) newTp (x+1)
         where
             symbol      = currentCell tp
-            tf          = head $ filter (\x -> inState x == q && inSymbol x == symbol) d
+            tf          = head $ filter (\x -> inState x == q && inSymbol x == symbol) ts
+            newState    = outState tf
+            wroteTape   = writeToCell tp (outSymbol tf)
+            newTp       
+                | outMove tf == L = tapeLeft wroteTape
+                | outMove tf == R = tapeRight wroteTape Blank
+
+-- | Runs a 'TM' on a 'TuringTape'
+-- This function is used for the purposes of experimenting as it outputs the number of transitions taken.
+runTrace :: TM -> TMTape -> Int
+runTrace tm tp  = stepTrace tm tp 0
+
+-- | Each step of the 'TM', applying the 'Transition' function based on the current symbol in the 'TuringTape' and the current 'State'
+-- This function is a copy of 'step' used for the purposes of experimenting as it outputs the number of transitions taken.
+stepTrace :: TM           -- ^ Current iteration of the machine in its currState.
+     -> TMTape       -- ^ Tape that the machine is reading through.
+     -> Int          -- ^ Counter to keep track of the number of steps (transitions) done.
+     -> Int          -- ^ Returns number of transitions before the machine stopped.
+stepTrace (TM q a qa qr ts) tp x
+    | q `elem` qa = x
+    | q `elem` qr = x
+    | otherwise   = stepTrace (TM newState a qa qr ts) newTp (x+1)
+        where
+            symbol      = currentCell tp
+            tf          = head $ filter (\x -> inState x == q && inSymbol x == symbol) ts
             newState    = outState tf
             wroteTape   = writeToCell tp (outSymbol tf)
             newTp       

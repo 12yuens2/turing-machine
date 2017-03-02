@@ -62,7 +62,7 @@ qw2-c0 # qw3-1 # R
 qw2-c0 $ qr $ R
 qw2-c0 c qr c R
 qw2-c0 _ qr _ R
-qw2-c1 0 qw2-0m 1 R
+qw2-c1 0 qw2-0m c R
 qw2-c1 1 qw2-1m c R
 qw2-c1 # qw2-b # L
 qw2-c1 $ qr $ R
