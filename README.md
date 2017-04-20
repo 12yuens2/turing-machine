@@ -1,10 +1,9 @@
 # Turing Machine
 
 ## Running the machine
-To build the executable, run the following commands:
-	
-	- `cabal configure` to configure if needed.
-	- `cabal build` to build the executable.
+To build the executable, run the following commands:	
+- `cabal configure` to configure if needed.
+- `cabal build` to build the executable.
 
 The executable is called `runtm` and can be found in dist/build/runtm/
 
