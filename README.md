@@ -16,4 +16,4 @@ The description must be in the form specified in TuringMarchineParser.hs. Refer 
 
 The input text file will be taken literally, character by character and written into the Tape of the Turing Machine. If there are any characters in the Tape that are not part of the alphabet in the Turing Machine description, the machine will fail.
 
-A few example TMs can be found in TMs.
+A few example TMs can be found in TMs/
